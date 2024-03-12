@@ -27,7 +27,7 @@ class TranscriptGenerator:
             "ME": "Mechanical Engineering"
         }
 
-        self.pdf = FPDF('L' ,'mm' , (800 , 830))
+        # self.pdf = FPDF('L' ,'mm' , (800 , 830))
 
     def pre_computation(self):
         print("pre computation starting")
@@ -102,6 +102,104 @@ class TranscriptGenerator:
     def make_line(self , y) :
         self.pdf.line(20, y, 810, y)
 
+
+    # Method to calculate CPI
+    def cpi_calc(self, grades , credits):  # function to calculate the cpi upto a particular semester 
+        tot_sum = 0.0
+        cred_sum = 0
+        for i in range(len(grades)):
+            tot_sum += grades[i]*credits[i]
+        for c in credits:
+            cred_sum += c
+        return round(tot_sum/cred_sum, 2)  #return the rounded cpi upto 2 decimal
+    
+
+    # Displaying the Credits, SPI, and CPI of the students
+    def overall_credits_cell(self, details) :
+        self.pdf.set_font('Arial', 'B', 16)
+        self.pdf.cell(200 , 10, f"Credits Taken: {details['credits']}    Credits Cleared: {details['credits']}  SPI: {details['spi']}   CPI: {details['cpi']}", 1, 2)
+        self.pdf.set_font('Arial' , '', 16)
+
+
+    def semester_name(self, name):
+        self.pdf.set_font('Arial',"BU", 16)
+        self.pdf.cell(30, 10, f"Semester {name}", 0, 2)
+        self.pdf.set_font('Arial','',16)
+
+    def create_cell(self, type, to, content):
+        # print(type ,to , content)
+        if type==1 :
+            # print("this is type 1")
+            self.pdf.cell(60, 10, str(content) , 1, to, 'C')
+            return
+
+        if type==2 :
+            # print("this is type 2")
+            self.pdf.cell(140, 10, str(content) , 1, to, 'C')
+            return
+
+        if type==3 :
+            # print("this is type 3")
+            self.pdf.cell(20, 10, str(content) , 1, to, 'C')
+            return
+
+        if type==4 :
+            # print("this is type 4")
+            self.pdf.cell(15, 10, str(content) , 1, to, 'C')
+            return
+
+        if type==5 :
+            # print("this is type 5")
+            self.pdf.cell(15, 10, str(content) , 1, to, 'C')
+            return
+        if type==6 :
+            # print("this is type 6")
+            self.pdf.cell(100 , 10, str(content), 1, to, 'C')
+
+
+    def create_table(self, start_x, table_body):
+        # print(headers)
+        # semester_name(self.pdf,1)
+        self.pdf.set_x(start_x)
+        self.pdf.set_font("Arial", 'BU', 16)
+        i = 1
+
+        for h in self.heading :
+                if i < 5:
+                    self.create_cell(i , 0, h)
+                else : 
+                    self.create_cell(i, 1 , h)
+                i = i+1
+
+        self.pdf.set_x(start_x)
+        self.pdf.set_font("Arial", '', 16)
+
+        i = 1
+        for row in table_body:
+            for column in row :
+                if i < 5:
+                    self.create_cell(i , 0, column)
+                else : 
+                    self.create_cell(i, 1 , column)
+                i = i+1
+            self.pdf.set_x(start_x)
+            i = 1
+
+
+    # Setting the footer format of the pdf
+    def footer(self) :
+        self.pdf.set_y(self.pdf.get_y() + 80)
+        y = self.pdf.get_y()
+        self.pdf.set_x(30)
+        self.pdf.set_font('Arial', 'B', 16)
+        self.pdf.text(self.pdf.get_x() , self.pdf.get_y(), "Date of issue: ")
+        self.pdf.line(75, self.pdf.get_y(), 150, self.pdf.get_y())
+        self.pdf.set_y(y - 10)
+        self.pdf.set_x(700)
+        self.pdf.cell(80, 1, "", 'B', 2, 'C')
+        self.pdf.cell(80, 10, "Assistant Registrar (Academic) ", 0, 0, 'C')
+            
+
     def generate_marksheet(self, start_roll, end_roll):
         # Calling pre_computational method to get all the input data into respective dictionary
         self.pre_computation()
@@ -135,7 +233,8 @@ class TranscriptGenerator:
             if curr_roll not in self.stud_dict :
                 not_present_roll_no.append(curr_roll)
                 continue 
-            # pdf = FPDF('L' ,'mm' , (800 , 830))
+            
+            self.pdf = FPDF('L' ,'mm' , (800 , 830))
 
             # Calling generate_pdf method 
             self.generate_pdf()
@@ -181,6 +280,27 @@ class TranscriptGenerator:
                     creds.append(int(self.courses_dict[k]["crd"]))
                     grades.append(self.grades_dict[self.stud_dict[curr_roll][str(j)][k]["Grade"]])
                     l += 1
+
+                self.semester_name(j)
+                self.create_table(self.pdf.get_x(), table_data)
+
+                for c in creds:
+                    credits[j-1]+=c
+                spi[j-1] = self.cpi_calc(grades, creds)
+                if j>1:
+                    total_credits[j-1] = total_credits[j-2]+credits[j-1]
+                    cpi[j-1] = self.cpi_calc(spi[:j],credits[:j])
+                else:
+                    total_credits[j-1]=credits[j-1]
+                    cpi[j-1]=spi[j-1]
+                details = {'credits' : credits[j-1] , 'spi' : spi[j-1], 'cpi' : cpi[j-1]}
+
+                # self.pdf.set_y(self.pdf.get_y() + 5)
+                self.overall_credits_cell(details)
+
+            self.set_coordinates(x_coordinate , y_coordinate, 10)
+            self.footer()
+            self.pdf.output("transcriptsIITP/"+curr_roll+".pdf")
 
 
 # Usage
