@@ -89,7 +89,18 @@ class TranscriptGenerator:
         self.pdf.cell(120, 8, f"Programme:  {self.student_details['programme']}" , 0, 0)
         self.pdf.cell(120, 8, f"Course:  {self.student_details['course']}" , 0, 1)
         self.pdf.set_y(self.pdf.get_y() + 10)
+
+
+    def set_coordinates(self, x, y, sem):
+        # print(int(sem/4) , (int(sem%3)-1))
+        self.pdf.set_y(y + int((sem-1)/3)*150)
+        self.pdf.set_x(x + (int((sem-1)%3))*240 + (int((sem-1)%3))*20)
+        if (sem-1)%3 == 0 and sem!=1 : 
+            self.make_line(self.pdf.get_y())
+            # self.pdf.set_y(self.pdf.get_y() + 20)
     
+    def make_line(self , y) :
+        self.pdf.line(20, y, 810, y)
 
     def generate_marksheet(self, start_roll, end_roll):
         # Calling pre_computational method to get all the input data into respective dictionary
@@ -115,7 +126,7 @@ class TranscriptGenerator:
 
         print(start, end)
 
-        put_html("<h3>Your Marksheets are being generated...... </h3>")
+        print("Your Marksheets are being generated......")
         not_present_roll_no = []
 
         for i in range(start , end+1):
@@ -137,6 +148,39 @@ class TranscriptGenerator:
             self.make_description()
 
             self.pdf.set_x(30)
+
+            credits = [0,0,0,0,0,0,0,0]                #list to store the credits sum of a semester 
+            total_credits = [0,0,0,0,0,0,0,0]          #list to store the credits sum till semester 
+            spi = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]    #list to store the spi of all the semesters 
+            cpi = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]    #list to store the cpi of all the semesters
+
+            x_coordinate = self.pdf.get_x()
+            y_coordinate = self.pdf.get_y()
+
+            for j in range(1, 9):
+                self.set_coordinates(x_coordinate , y_coordinate, j)
+                creds = []
+                grades = []
+                l = 1
+
+                try:
+                    self.stud_dict[curr_roll][str(j)]
+                except KeyError:
+                    continue
+
+                table_data = []
+
+                for k in self.stud_dict[curr_roll][str(j)]: #k is the subject code 
+                    temp_data_row = []
+                    temp_data_row.append(k)
+                    temp_data_row.append(self.courses_dict[k]['subname'])
+                    temp_data_row.append(self.courses_dict[k]["ltp"])
+                    temp_data_row.append(self.courses_dict[k]["crd"])
+                    temp_data_row.append(self.grades_dict[self.stud_dict[curr_roll][str(j)][k]["Grade"]])
+                    table_data.append(temp_data_row)
+                    creds.append(int(self.courses_dict[k]["crd"]))
+                    grades.append(self.grades_dict[self.stud_dict[curr_roll][str(j)][k]["Grade"]])
+                    l += 1
 
 
 # Usage
