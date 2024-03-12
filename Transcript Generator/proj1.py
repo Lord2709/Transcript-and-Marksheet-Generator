@@ -27,6 +27,8 @@ class TranscriptGenerator:
             "ME": "Mechanical Engineering"
         }
 
+        self.pdf = FPDF('L' ,'mm' , (800 , 830))
+
     def pre_computation(self):
         print("pre computation starting")
         with open("sample_input/subjects_master.csv", "r") as file:
@@ -48,6 +50,30 @@ class TranscriptGenerator:
                     self.stud_dict[i["Roll"]][i["Sem"]] = {}
                 self.stud_dict[i["Roll"]][i["Sem"]][i["SubCode"]] = {"Grade": i["Grade"].strip(), "Sub_Type": i["Sub_Type"]}
         print("Pre computation done")
+
+    
+    def generate_pdf(self):
+        self.pdf.add_page()
+        start_index_x = 30
+        self.pdf.set_font('Arial' , 'B' , 16)
+        self.pdf.set_left_margin(20)
+        self.pdf.set_right_margin(20)
+        self.pdf.cell(0 , 700 , "" ,  1, 1)
+        self.pdf.set_xy(20 , 10)
+        self.pdf.cell(80, 80, "", 1,0,'C')
+        self.pdf.set_xy(20 , 10)
+        self.pdf.image('logo.png' ,self.pdf.get_x() + 5 , self.pdf.get_y() + 5 , 70 , 70 , "png", 'logo.png')
+        self.pdf.set_xy(100 , 10)
+        self.pdf.cell(630 , 80 , "" , 1 , 0 , 'C')
+        self.pdf.set_xy(100 , 10)
+        self.pdf.image('name.jpg', self.pdf.get_x() + 5, self.pdf.get_y() + 5 , 625, 70, "png", 'name.jpg' )
+        self.pdf.set_xy(730 , 10)
+        self.pdf.cell(80, 80, "", 1,0,'C')
+        self.pdf.set_xy(735 , 10)
+        self.pdf.image('logo.png' ,self.pdf.get_x() , self.pdf.get_y() + 5 , 70 , 70 , "png", 'logo.png')
+        self.pdf.set_y(80)
+        self.pdf.set_x(start_index_x)
+
 
     def generate_marksheet(self, start_roll, end_roll):
         # Calling pre_computational method to get all the input data into respective dictionary
@@ -72,6 +98,20 @@ class TranscriptGenerator:
             return
 
         print(start, end)
+
+        put_html("<h3>Your Marksheets are being generated...... </h3>")
+        not_present_roll_no = []
+
+        for i in range(start , end+1):
+            curr_roll = prefix + str(int(i/10)) + str(int(i%10))
+            print(curr_roll)
+            if curr_roll not in self.stud_dict :
+                not_present_roll_no.append(curr_roll)
+                continue 
+            # pdf = FPDF('L' ,'mm' , (800 , 830))
+
+            # Calling generate_pdf method 
+            self.generate_pdf()
 
 
 # Usage
