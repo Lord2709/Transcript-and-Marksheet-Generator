@@ -233,7 +233,7 @@ class TranscriptGenerator:
             if curr_roll not in self.stud_dict :
                 not_present_roll_no.append(curr_roll)
                 continue 
-            
+
             self.pdf = FPDF('L' ,'mm' , (800 , 830))
 
             # Calling generate_pdf method 
@@ -301,6 +301,11 @@ class TranscriptGenerator:
             self.set_coordinates(x_coordinate , y_coordinate, 10)
             self.footer()
             self.pdf.output("transcriptsIITP/"+curr_roll+".pdf")
+
+        print(not_present_roll_no)
+        print("The required transcripts have been generated, please look in the transcriptsIITP folder for the same")
+        for roll in not_present_roll_no :
+            print(f"Roll no {roll} was not found in the list")
 
 
 # Usage
