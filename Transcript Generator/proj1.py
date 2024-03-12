@@ -209,22 +209,22 @@ class TranscriptGenerator:
         prefix = start_roll[0:6]
 
         if start_roll[4:6] != end_roll[4:6]:
-            print("The students must be from the same department")
+            put_warning("The students must be from same departments", closable=True)
             return
 
         if end_roll[0:6] != prefix:
-            print("Please enter the correct range of roll numbers")
+            put_warning("Please enter correct range of roll numbers", closable=True)
             return
 
         start = int(start_roll[6:])
         end = int(end_roll[6:])
         if start > end:
-            print("Please input the correct range of roll numbers")
+            put_warning("Please input correct range of roll numbers" , closable=True)
             return
 
         print(start, end)
 
-        print("Your Marksheets are being generated......")
+        put_html("<h3>Your Marksheets are being generated...... </h3>")
         not_present_roll_no = []
 
         for i in range(start , end+1):
@@ -303,9 +303,9 @@ class TranscriptGenerator:
             self.pdf.output("transcriptsIITP/"+curr_roll+".pdf")
 
         print(not_present_roll_no)
-        print("The required transcripts have been generated, please look in the transcriptsIITP folder for the same")
+        put_success("The required transcripts have been generated, please look in the transcriptsIITP folder for the same" ,  closable= True)        
         for roll in not_present_roll_no :
-            print(f"Roll no {roll} was not found in the list")
+            put_info(f"Roll no {roll} was not found in the list" , closable=True)
 
 
 # Usage
