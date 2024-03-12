@@ -5,5 +5,5 @@ To run --> run proj1.py file and navigate to "http://localhost:3001" in your bro
 
 ### Project - GUI based marksheet generator
 
-To run --> run the app.py file and navigate to "http://localhost:3001" in your browser and you can then find the program running.
+To run --> run the proj2.py file and navigate to "http://localhost:3001" in your browser and you can then find the program running.
            Move to the sample_output/marksheet to find the generated marksheets.
