@@ -309,7 +309,27 @@ class TranscriptGenerator:
 
 
 # Usage
-transcript_generator = TranscriptGenerator()
-start_roll = "0401CS01"
-end_roll = "0401CS09"
-transcript_generator.generate_marksheet(start_roll, end_roll)
+# transcript_generator = TranscriptGenerator()
+# start_roll = "0401CS01"
+# end_roll = "0401CS09"
+# transcript_generator.generate_marksheet(start_roll, end_roll)
+
+
+def main() :
+    req_action = "Generate Marksheets"
+    while(req_action != "None") :
+
+        req_action = actions(label = "Please select your action" ,
+                    buttons=[{'label' : "Generate Marksheets",'value':"Generate Marksheets"} ,
+                        {'label' : "I wish to exit",'value':"None"}
+                    ])
+
+        if (req_action == "Generate Marksheets"):
+            start = input("Please enter the starting roll number", type = TEXT)
+            end = input("Please enter the ending Roll numbetr to generate the report", TYPE=TEXT)
+            transcript_generator = TranscriptGenerator()
+            transcript_generator.generate_marksheet(start, end)
+        else :
+            put_success("Hope you liked the project")
+            
+start_server(main, port=3001)  
