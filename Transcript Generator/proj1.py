@@ -51,7 +51,8 @@ class TranscriptGenerator:
                 self.stud_dict[i["Roll"]][i["Sem"]][i["SubCode"]] = {"Grade": i["Grade"].strip(), "Sub_Type": i["Sub_Type"]}
         print("Pre computation done")
 
-    
+
+    # Method to create a PDF consisting of LOGO AND NAME of IIT Patna
     def generate_pdf(self):
         self.pdf.add_page()
         start_index_x = 30
@@ -74,6 +75,21 @@ class TranscriptGenerator:
         self.pdf.set_y(80)
         self.pdf.set_x(start_index_x)
 
+
+    def make_description(self):
+        self.pdf.set_y(self.pdf.get_y())
+        self.pdf.set_x(250)
+        self.pdf.cell(400, 16,"" ,1, 0, 'C')
+        self.pdf.set_x(280)
+        self.pdf.set_font("Arial", 'B', 16)
+        self.pdf.cell(120, 8, f"Roll No:  {self.student_details['roll']}" , 0, 0)
+        self.pdf.cell(120, 8, f"Name:  {self.student_details['name']}" , 0, 0)
+        self.pdf.cell(120, 8, f"Year of admission:  {self.student_details['year']}" , 0, 1)
+        self.pdf.set_x(280)
+        self.pdf.cell(120, 8, f"Programme:  {self.student_details['programme']}" , 0, 0)
+        self.pdf.cell(120, 8, f"Course:  {self.student_details['course']}" , 0, 1)
+        self.pdf.set_y(self.pdf.get_y() + 10)
+    
 
     def generate_marksheet(self, start_roll, end_roll):
         # Calling pre_computational method to get all the input data into respective dictionary
@@ -112,6 +128,15 @@ class TranscriptGenerator:
 
             # Calling generate_pdf method 
             self.generate_pdf()
+
+            self.pdf.set_y(self.pdf.get_y() + 20)
+            self.student_details['roll'] = curr_roll
+            self.student_details['course'] = self.course_details[curr_roll[4:6]]
+
+            # Calling make_description method 
+            self.make_description()
+
+            self.pdf.set_x(30)
 
 
 # Usage
